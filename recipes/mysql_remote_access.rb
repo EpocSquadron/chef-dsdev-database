@@ -1,5 +1,5 @@
 
-include_recipe "mysql::server"
+include_recipe "database"
 
 mysql_connection_info = {
 	:host => "localhost",
@@ -8,8 +8,10 @@ mysql_connection_info = {
 }
 
 # Make a dedicated localhost only user for it
-mysql_database_user 'repl' do
+mysql_database_user 'remote' do
 	connection mysql_connection_info
-	host '%'
-	action [:grant]
+	host node['chef-dsdev-database']['host_range']
+	password node['mysql']['server_repl_password']
+	privileges [:all]
+	action [:create, :grant]
 end
